@@ -2,11 +2,9 @@ require("dotenv").config();
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-
 // 🔑 PASTE YOUR GROQ API KEY HERE
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const PORT = 3000;
-
 const server = http.createServer(async (req, res) => {
   if (req.method === "GET" && req.url === "/") {
     const filePath = path.join(__dirname, "index.html");
@@ -29,7 +27,7 @@ const server = http.createServer(async (req, res) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${GROQ_API_KEY}`
           },
-         body: JSON.stringify({
+          body: JSON.stringify({
             model: "qwen/qwen3.6-27b",
             max_tokens: 20,
             reasoning_effort: "none",
@@ -49,6 +47,7 @@ const server = http.createServer(async (req, res) => {
               ]
             }]
           })
+        });
         const data = await response.json();
         if (data.error) {
           res.writeHead(400, { "Content-Type": "application/json" });
