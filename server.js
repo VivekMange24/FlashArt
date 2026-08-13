@@ -1,10 +1,10 @@
+require("dotenv").config();
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
 // 🔑 PASTE YOUR GROQ API KEY HERE
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
-
 const PORT = 3000;
 
 const server = http.createServer(async (req, res) => {
@@ -17,14 +17,12 @@ const server = http.createServer(async (req, res) => {
     });
     return;
   }
-
   if (req.method === "POST" && req.url === "/api/guess") {
     let body = "";
     req.on("data", (chunk) => (body += chunk));
     req.on("end", async () => {
       try {
         const { imageData } = JSON.parse(body);
-
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -32,8 +30,8 @@ const server = http.createServer(async (req, res) => {
             "Authorization": `Bearer ${GROQ_API_KEY}`
           },
           body: JSON.stringify({
-            model: "meta-llama/llama-4-scout-17b-16e-instruct",
-            max_tokens: 100,
+            model: "qwen/qwen3.6-27b",
+            max_tokens: 15,
             messages: [{
               role: "user",
               content: [
@@ -45,21 +43,18 @@ const server = http.createServer(async (req, res) => {
                 },
                 {
                   type: "text",
-                  text: "You are playing Quick Draw! Look at this hand-drawn sketch on a white background. What object is drawn? Give your best guess in 1-3 words. Be direct — just say what you think it is, e.g. 'A cat' or 'A house'. Don't overthink it."
+                  text: "Reply with ONLY the object name in 1-3 words. No explanation, no punctuation, no extra text. Examples of correct replies: 'Cat', 'A house', 'Tree'. What is drawn here?"
                 }
               ]
             }]
           })
         });
-
         const data = await response.json();
-
         if (data.error) {
           res.writeHead(400, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ error: data.error.message }));
           return;
         }
-
         const guess = data.choices[0].message.content.trim();
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ guess }));
@@ -70,11 +65,9 @@ const server = http.createServer(async (req, res) => {
     });
     return;
   }
-
   res.writeHead(404);
   res.end("Not found");
 });
-
 server.listen(PORT, () => {
   console.log("✅ Quick Draw running at http://localhost:" + PORT);
 });
