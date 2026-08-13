@@ -29,9 +29,10 @@ const server = http.createServer(async (req, res) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${GROQ_API_KEY}`
           },
-          body: JSON.stringify({
+         body: JSON.stringify({
             model: "qwen/qwen3.6-27b",
-            max_tokens: 15,
+            max_tokens: 20,
+            reasoning_effort: "none",
             messages: [{
               role: "user",
               content: [
@@ -48,7 +49,6 @@ const server = http.createServer(async (req, res) => {
               ]
             }]
           })
-        });
         const data = await response.json();
         if (data.error) {
           res.writeHead(400, { "Content-Type": "application/json" });
