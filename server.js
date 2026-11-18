@@ -28,7 +28,7 @@ const server = http.createServer(async (req, res) => {
             "Authorization": `Bearer ${GROQ_API_KEY}`
           },
           body: JSON.stringify({
-            model: "qwen/qwen3.6-27b",
+            model: "qwen/qwen3.8-27b",
             max_tokens: 20,
             reasoning_effort: "none",
             messages: [{
